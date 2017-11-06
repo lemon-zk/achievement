@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav {
+            height: 30px;
+            background: #036663;
+            border-bottom: 1px solid #369;
+            line-height: 30px;
+            padding-left: 30px;
+        }
+
+        .nav a {
+            color: #fff;
+            text-align: center;
+            font-size: 14px;
+            text-decoration: none;
+
+        }
+
+        .d-box {
+            width: 400px;
+            height: 300px;
+            border: 5px solid #eee;
+            box-shadow: 2px 2px 2px 2px #666;
+            position: absolute;
+            top: 40%;
+            left: 40%;
+        }
+
+        .hd {
+            width: 100%;
+            height: 25px;
+            background-color: #7c9299;
+            border-bottom: 1px solid #369;
+            line-height: 25px;
+            color: white;
+
+        }
+        /*鼠标点击之后改变状态为移动图标*/
+        .hd:active {
+            cursor: move;
+        }
+
+        #box_close {
+            float: right;
+            cursor: pointer;
+        }
+    </style>
+    <script src="../jquery.1.1.0.js"></script>
+    <script>
+        window.onload = function () {
+            //需求：鼠标点击之后可进行文本框的拖拽
+            //点击事件onmousedown  鼠标弹起onmouseup  鼠标移动 onmousemove
+            //获取事件源
+            var box = document.getElementById("d_box");
+            var drop = document.getElementById("drop");
+
+            //绑定事件
+            drop.onmousedown = function (event) {
+                event = event || window.event;
+                //鼠标在页面的坐标
+                var pagex = event.pageX || scroll().left + event.clientX;
+                var pagey = event.pageY || scroll().top + event.clientY;
+                //鼠标在盒子内的坐标
+                //之所以使用box  是因为drop的父盒子使用了定位 无法使用drop.offsetLeft获取距离页面距离
+                var x = pagex - box.offsetLeft;
+                var y = pagey - box.offsetTop;
+                //使用drop拖拽文本框有bug  当鼠标移出drop区域的时候无法移动box
+                //使用document 作用域为整个文档页面
+                document.onmousemove = function (event) {
+                    //获取事件
+                    event = event || window.event;
+                    //获取鼠标坐标
+                    var xx = event.pageX || scroll().left + event.clientX;
+                    var yy = event.pageY || scroll().top + event.clientY;
+                    //二次处理坐标
+                    xx = xx - x;
+                    yy = yy - y;
+                    //移动文本框
+                    box.style.left = xx + "px";
+                    box.style.top = yy + "px";
+
+                    //处理bug  禁止为本选中（原理：选中后取消）
+                    window.getSelection ? window.getSelection().removeAllRanges():document.selection.empty();
+                }
+            }
+            //解绑事件
+            drop.onmouseup = function () {
+                //解绑
+                document.onmousemove = null;
+            }
+        }
+
+    </script>
+</head>
+<body>
+<!--顶部注册部分，无用-->
+<div class="nav">
+    <a href="javascript:;" id="register">注册信息</a>
+</div>
+<!--我们移动的对话框-->
+<div class="d-box" id="d_box">
+    <div class="hd" id="drop">
+        <i>注册信息 (可以拖拽)</i>
+        <span id="box_close">【关闭】</span>
+    </div>
+    <div class="bd"></div>
+</div>
+
+</body>
+</html>

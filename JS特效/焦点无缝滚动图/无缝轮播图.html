@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .box {
+            width: 500px;
+            height: 170px;
+            margin: 100px auto;
+            padding: 2px;
+            border: 1px solid #ccc;
+        }
+        .inner {
+            width: 500px;
+            height: 170px;
+            overflow: hidden;
+            position: relative;
+        }
+        ul {
+            list-style: none;
+            width: 600%;
+            position: absolute;
+            left: 0;
+        }
+        li {
+            float: left;
+        }
+        span {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 1px solid #ccc;
+            text-align: center;
+            line-height: 16px;
+            margin: 3px;
+            background-color: #fff;
+        }
+        .current {
+            background-color: darkorange;
+            cursor: pointer;
+            color: #fff;
+        }
+        ol {
+            list-style: none;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+        ol li {
+            float: left;
+            width: 16px;
+            height: 16px;
+            background-color: #fff;
+            text-align: center;
+            line-height: 16px;
+            margin: 3px 5px;
+        }
+        .change {
+            display: none;
+        }
+        .change span {
+            width: 20px;
+            height: 40px;
+            position: absolute;
+            background-color: #ccc;
+            text-align: center;
+            line-height: 40px;
+            cursor: pointer;
+        }
+        .change #left {
+            left: 0;
+            top: 50%;
+            margin-top: -20px;
+        }
+        .change #right {
+            right: 0;
+            top: 50%;
+            margin-top: -20px;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+
+            //需求1：复制第一张图片放在ul最后的位置
+            //需求2：当鼠标放到图片区域  左右按钮显示  离开隐藏
+            //需求3：随着图片的滑动下面的方块也跟着滑动
+
+
+            //步骤：
+            //获取元素：
+
+            var inner = document.getElementById("inner");
+            var imageWidth = inner.offsetWidth;
+            var ul = inner.children[0];
+            var ol = inner.children[1];
+            var olLiArr = ol.children;
+            var div = inner.lastElementChild || inner.lastChild;
+            var spanArr = document.getElementsByTagName("span");
+
+            //复制第一张图片放在ul的最后面
+            var clo = ul.children[0].cloneNode(true);
+            ul.appendChild(clo);
+            //为ol中创建li  创建的li的个数是ul中的数-1
+            for(var i=0;i<ul.children.length-1;i++){
+                var olNewLi = document.createElement("li");
+                olNewLi.innerHTML = i+1;
+                ol.appendChild(olNewLi);
+            }
+            var olLiArr = ol.children;
+            olLiArr[0].className = "current";
+
+
+            //绑定事件，鼠标放上去显示，离开隐藏
+            inner.onmouseover = function () {
+                div.style.display = "block";
+                //清除定时器手动操作
+                clearInterval(timer);
+            }
+            //离开隐藏
+            inner.onmouseout = function () {
+                div.style.display = "none";
+                timer = setInterval(autoplay,1000);
+            }
+
+            //点击右下侧的小方块 根据情况跳转到该页面
+            for(var i=0;i<olLiArr.length;i++){
+                olLiArr[i].index = i;
+                olLiArr[i].onmouseover = function () {
+                    for(var j=0;j<olLiArr.length;j++){
+                        olLiArr[j].className ="";
+                    }
+                    this.className = "current";
+                    //Bug:当自动滑到第四个时，鼠标控制小方块到第一个，然后离开，页面会直接跳到第五
+                            //而不是第二
+                    //处理方法：让索引值和key和square数值同步
+                    square = key = this.index;
+
+                    animate(ul,-this.index*imageWidth);
+                }
+            }
+
+            //添加定时器  自动轮播
+            var timer = setInterval(autoplay,500);
+
+            var key =0;
+            var square = 0;
+            function autoplay(){
+                //通过控制key的自增来模拟图片的索引值，然后移动ul
+                key++;
+                if(key>olLiArr.length){
+                    //图片已经滑动到最后一张，接下来，跳转到第一张，然后在滑动到第二张
+                    ul.style.left = 0;
+                    key = 1;
+                }
+                animate(ul,-key*imageWidth);
+                //通过控制square的自增来模拟小方块的   索引值 ，然后点亮盒子
+                //排他思想做小方块
+                square++;
+                if(square>olLiArr.length-1){//索引值不能大于等于5，如果等于5，立刻变为0；
+                    square = 0;
+                }
+                for(var i=0;i<olLiArr.length;i++){
+                    olLiArr[i].className = "";
+                }
+                olLiArr[square].className = "current";
+            }
+
+
+            //设置左右按钮的功能
+            //点击左侧按钮
+            spanArr[0].onclick = function () {
+                key--;
+                if(key<0){
+                    //先移动到最后一张，然后key的值取之前一张的索引值，然后在向前移动
+                    ul.style.left = -imageWidth*(olLiArr.length)+"px";
+                    key = olLiArr.length-1;
+                }
+                animate(ul,-imageWidth*key);
+                //通过控制square的自增来模拟小方块的索引值，然后点亮盒子
+                //排他思想做小方块
+                square--;
+                if(square<0){
+                    square = olLiArr.length-1;    //作为下标使用
+                }
+                for(var i=0;i<olLiArr.length;i++){
+                    olLiArr[i].className = "";
+                }
+                olLiArr[square].className = "current";
+            }
+            //点击右侧按钮 图片（ul）向左滑动一个图片的距离
+            //使用计数器思想
+            spanArr[1].onclick = function () {
+//                num++;
+//                if(num>ul.children.length-1){
+//                    num = ul.children.length-1;
+//                }
+//                animate(ul,-imageWidth*num);
+                autoplay();
+            }
+
+            //封装的滑动动画
+            function animate(ele,target){
+                //使用定时器之前先清除定时器
+                clearInterval(ele.timer);
+
+                //bug1：不能从400回到200位置   处理: 判断target和offsetLeft哪个大  若target大继续走 否则回来
+                var speed = target>ele.offsetLeft?15:-15;
+                //定时器
+                ele.timer = setInterval(function (){
+                    //判断target和offsetLeft 的差值
+                    var val = target - ele.offsetLeft;
+                    ele.style.left = ele.offsetLeft + speed +"px";
+                    //如果target和当前位置的差值小于 步长的时候 不能再走了 清除定时器
+                    if(Math.abs(val)<=Math.abs(speed)){
+                        ele.style.left = target + "px";
+                        clearInterval(ele.timer);
+                    }
+                },5)
+            }
+
+        }
+
+    </script>
+</head>
+<body>
+<div class="box">
+    <div class="inner" id="inner">
+        <ul>
+            <li><img src="image/1.jpg" alt=""></li>
+            <li><img src="image/2.jpg" alt=""></li>
+            <li><img src="image/3.jpg" alt=""></li>
+            <li><img src="image/4.jpg" alt=""></li>
+            <li><img src="image/5.jpg" alt=""></li>
+        </ul>
+        <ol>
+            <!--<li class="current">1</li>-->
+            <!--<li>2</li>-->
+            <!--<li>3</li>-->
+            <!--<li>4</li>-->
+            <!--<li>5</li>-->
+        </ol>
+        <div class="change">
+            <span id="left"><</span>
+            <span id="right">></span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

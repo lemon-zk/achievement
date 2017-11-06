@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body,html {
+            height: 100%;
+        }
+        ul {
+            list-style: none;
+            height: 100%;
+        }
+        ul li {
+            height: 100%;
+        }
+        ol {
+            list-style: none;
+            position: fixed;
+            width: 60px;
+            height: 180px;
+            left: 10px;
+            top: 50%;
+            margin-top: -90px;
+        }
+        ol li {
+            width: 60px;
+            height: 36px;
+            border: 1px solid #000;
+            margin-top: -1px;
+            text-align: center;
+            line-height: 36px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="../jquery.1.1.0.js"></script>
+    <script>
+        window.onload = function () {
+            //需求：先给商品和对应的区域上背景颜色，然后点击商品类型跳跃到该区域,使用window.scrollTo();
+
+            //步骤：
+            //1.给ul和ol中的li设置背景颜色
+            //2.给ol中的li绑定点击事件
+            //3.使用缓动动画的原理实现屏幕的滚动  关键技术：window.scrollTo();
+            //重点：target 和 leader  的取值（赋值）；
+
+
+            //获取元素
+            var ul = document.getElementsByTagName("ul")[0];
+            var ulLiArr = ul.children;
+            var ol = document.getElementsByTagName("ol")[0];
+            var olLiArr = ol.children;
+            var target = 0;
+            var leader = 0;
+            var timer = null;
+            //创建数组
+            var arrColor = ["red","yellow","blue","green","pink"];
+            //for循环赋予颜色
+            for(var i=0;i<arrColor.length;i++){
+                //上色
+                ulLiArr[i].style.backgroundColor = arrColor[i];
+                olLiArr[i].style.backgroundColor = arrColor[i];
+
+                //属性绑定索引值
+                olLiArr[i].index = i;
+                //绑定事件
+                olLiArr[i].onclick = function () {
+                    //缓动动画实现页面区域的跳跃
+                    //给target赋值
+                    target = ulLiArr[this.index].offsetTop;
+                    //使用定时器先清除定时器
+                    clearInterval(timer);
+                    timer = setInterval(function () {
+                        //设置步长
+                        var step = (target - leader)/10;
+                        //二次处理步长
+                        step = step>0?Math.ceil(step):Math.floor(step);
+                        //给当前位置改变值
+                        leader = leader + step;
+                        window.scrollTo(0,leader);
+                        if(Math.abs(target - leader)<= Math.abs(step)){
+                            window.scrollTo(0,target);
+                            clearInterval(timer);
+                        }
+                    },25)
+                }
+
+            }
+
+            //页面滚动
+            window.onscroll = function () {
+                //给leader赋值
+                leader = scroll().top;
+            }
+        }
+    </script>
+</head>
+<body>
+    <ul>
+        <li>袜子区域</li>
+        <li>鞋子区域</li>
+        <li>裤子区域</li>
+        <li>褂子区域</li>
+        <li>裙子区域</li>
+    </ul>
+    <ol>
+        <li>袜子</li>
+        <li>鞋子</li>
+        <li>裤子</li>
+        <li>褂子</li>
+        <li>裙子</li>
+    </ol>
+
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .top {
+            width: 800px;
+            height: 130px;
+            background-color: #ddd;
+            margin: 0 auto;
+        }
+        #nav {
+            height: 50px;
+            background-color: red;
+            text-align: center;
+            line-height: 50px;
+            width: 100%;
+            z-index: 20;
+        }
+        .content {
+            width: 800px;
+            height: 1800px;
+            background-color: green;
+            margin: 0 auto;
+            padding-top: 100px;
+        }
+        .content .pic {
+            width: 500px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        ul {
+            position: absolute;
+            width: 700%;
+            height: 200px;
+            list-style: none;
+        }
+        ul li {
+            float: left;
+        }
+        ol {
+            position: absolute;
+            right: 15px;
+            bottom: 5px;
+            list-style: none;
+        }
+        ol li {
+            float: left;
+            width: 16px;
+            height: 16px;
+            text-align: center;
+            line-height: 16px;
+            margin: 3px 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        span {
+            width: 30px;
+            height: 60px;
+            font: 500 17px/70px "simsun";
+            text-align: center;
+            cursor: pointer;
+        }
+        .change {
+            display: none;
+        }
+        #lbt {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            margin-top: -30px;
+            background-color: #eee;
+        }
+        #rbt {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            margin-top: -30px;
+            background-color: #eee;
+        }
+        #left {
+            position: absolute;
+            width: 150px;
+            height: 250px;
+            left:0;
+            top: 200px;
+            background-color: yellow;
+            text-align: center;
+            line-height: 250px;
+        }
+        #right {
+            position: absolute;
+            width: 150px;
+            height: 250px;
+            right: 0;
+            top: 200px;
+            background-color: yellow;
+            text-align: center;
+            line-height: 250px;
+        }
+        .fixed {
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        .current {
+            background-color: darkorange;
+        }
+        .image {
+            position: fixed;
+            right: 15px;
+            bottom: 30px;
+            display: none;
+            cursor: pointer;
+            border: 1px solid #000;
+        }
+        .box{
+            width: 322px;
+            position: fixed;
+            bottom:0;
+            right:0;
+        }
+        span{
+            position: absolute;
+            top:0;
+            right:0;
+            width:30px;
+            height: 20px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="../jquery.1.1.0.js"></script>
+    <script>
+        window.onload = function () {
+            //获取元素
+            var topDiv = document.getElementsByClassName("top")[0];
+            var height = topDiv.offsetHeight;
+            var navDiv = document.getElementById("nav");
+            var leftDiv = document.getElementById("left");
+            var rightDiv = document.getElementById("right");
+            var content = document.getElementsByTagName("div")[2];
+            //需求：固定导航栏,当卷入的高度大于top盒子的高度的时候，固定nav盒子
+            window.onscroll = function () {
+                var a = content.style.paddingTop;
+                if(scroll().top>height){
+                    navDiv.className = "fixed";
+                    content.style.paddingTop =a + navDiv.offsetHeight + "px";
+                }else{
+                    navDiv.className = "";
+                    content.style.paddingTop = a + "px";
+                }
+
+                //两侧的盒子跟随网页移动
+                var val = scroll().top;
+                animateT(leftDiv,val+ 200);
+                animateT(rightDiv,val+ 200);
+
+                //处理返回顶部小火箭
+                if(scroll().top>200){
+                    imgBtn.style.display = "block";
+                }else{
+                    imgBtn.style.display = "none";
+                }
+                leader = scroll().top;              //当前位置
+            }
+            //小火箭点击返回顶部    使用window.scrollTo();
+            var imgBtn = document.getElementsByClassName("image")[0];
+            var leader = 0;      //当前位置
+            var target = 0;      //目标位置
+            imgBtn.onclick = function () {
+                //用定时器先清除定时器
+                clearInterval(timer);
+                timer = setInterval(function () {
+                    var step = (target - leader)/10;
+                    step = step>0?Math.ceil(step):Math.floor(step);
+                    leader = leader + step;
+                    window.scrollTo(0,leader);
+                    if(leader === 0){
+                        clearInterval(timer);
+                    }
+                },20)
+            }
+
+            //内容图片无缝滚动
+            var pic = document.getElementsByClassName("pic")[0];
+            var imgWidth = pic.offsetWidth;
+            var ul = pic.children[0];
+            var ol = pic.children[1];
+            var change = document.getElementsByClassName("change")[0];
+            var lbt = change.children[0];
+            var rbt = change.children[1];
+            var ulArr = ul.children;
+
+            //复制ul中的第一张图片放到最后
+            var clo = ul.children[0].cloneNode(true);
+            ul.appendChild(clo);
+            //for循环创建li放入到ol中
+            for(var i=0;i<ulArr.length-1;i++){
+                var newLi = document.createElement("li");
+                newLi.innerHTML = i+1;
+                ol.appendChild(newLi);
+            }
+            //给ol中的第一个li设置样式
+            var olLiArr = ol.children;
+            olLiArr[0].className = "current";
+
+            //为小方块绑定onmouseover事件
+            for(var i=0;i<olLiArr.length;i++){
+                //绑定index属性，方便移动图片
+                olLiArr[i].index = i;
+                olLiArr[i].onmouseover = function () {
+                    for(var j=0;j<olLiArr.length;j++){
+                        olLiArr[j].className = "";
+                    }
+                    this.className = "current";
+                    //让square和key和this.index同步
+                    square = key = this.index;
+                    animate1(ul,-this.index*imgWidth);
+                }
+            }
+
+            //设置放上去显示，离开隐藏
+            pic.onmouseover = function () {
+                change.style.display = "block";
+                clearInterval(timer);
+            }
+            pic.onmouseout = function () {
+                change.style.display = "none";
+                timer = setInterval(autoplay,1000);
+            }
+            //设置左右按钮，点击可以设置图片的轮播
+            //左按钮
+            lbt.onclick = function () {
+                key--;
+                if(key<0){
+                    ul.style.left = -imgWidth*olLiArr.length + "px";
+                    key = 4;
+                }
+                animate1(ul,-key*imgWidth);
+                square--;
+                if(square<0){
+                    square = olLiArr.length-1;
+                }
+                for(var i=0;i<olLiArr.length;i++){
+                    olLiArr[i].className = "";
+                }
+                olLiArr[square].className = "current";
+            }
+            //右按钮
+            rbt.onclick = function () {
+                autoplay();
+            }
+            var timer = setInterval(autoplay,1000);
+            //自动轮播
+            var key = 0;
+            var square = 0;
+
+            function autoplay(){
+                key++;
+                if(key>olLiArr.length){
+                    ul.style.left = 0;
+                    key = 1;
+                }
+                animate1(ul,-key*imgWidth);
+                //小方块
+                square++;
+                if(square > olLiArr.length-1){
+                    square = 0;
+                }
+                for(var i=0;i<olLiArr.length;i++){
+                    olLiArr[i].className = "";
+                }
+                olLiArr[square].className = "current";
+            }
+
+
+            //动画封装
+            function animate1(ele,target){
+                //调用定时器，先清除定时器
+                clearInterval(ele.timer);
+                //根据目标位置和当前位置的比较，确定speed步长的正负值
+                var speed = target>ele.offsetLeft?15:-15;
+                ele.timer = setInterval(function () {
+                    //判断目标位置和当前位置的差值与步长的大小
+                    var val = target - ele.offsetLeft;
+                    //移动盒子距离为  盒子位置+步长
+                    ele.style.left = ele.offsetLeft + speed +"px";
+                    //比较二者的大小 Math.abs() 取绝对值
+                    if(Math.abs(val)<Math.abs(speed)){
+                        ele.style.left = target +"px";
+                    }
+                },10)
+            }
+            //360广告关闭特效
+            var guanBi = document.getElementById("guanbi");
+            var box = document.getElementsByClassName("box")[0];
+            var b = document.getElementById("b");
+
+            //绑定事件
+            guanBi.onclick = function () {
+                //先把下面的盒子的高变为0
+                animate(b,{"height":0}, function () {
+                    animate(box,{"width":0});
+                });
+            }
+
+
+
+        }
+
+
+
+
+
+
+
+    </script>
+</head>
+<body>
+<div class="top"></div>
+<div id="nav">导航栏</div>
+<div class="content">
+    <div class="pic">
+        <ul>
+            <li><img src="image/1.jpg"></li>
+            <li><img src="image/2.jpg"></li>
+            <li><img src="image/3.jpg"></li>
+            <li><img src="image/4.jpg"></li>
+            <li><img src="image/5.jpg"></li>
+        </ul>
+        <ol>
+
+        </ol>
+        <div class="change">
+            <span id="lbt"><</span>
+            <span id="rbt">></span>
+        </div>
+    </div>
+</div>
+<div id="left">左侧广告</div>
+<div id="right">右侧广告</div>
+<img src="image/Top1.jpg" class="image">
+<div class="box">
+    <span id="guanbi"></span>
+    <div class="hd" id="t">
+        <img src="image/t.jpg" alt=""/>
+    </div>
+    <div class="bd" id="b">
+        <img src="image/b.jpg" alt=""/>
+    </div>
+</div>
+</body>
+</html>

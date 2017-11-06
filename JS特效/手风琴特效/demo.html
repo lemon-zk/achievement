@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        ul {
+            list-style: none;
+        }
+        * {
+            margin:0; padding:0;
+        }
+        div {
+            width: 1150px;
+            height: 400px;
+            margin:50px auto;
+            border:1px solid red;
+            overflow: hidden;
+        }
+        div li {
+            width: 240px;
+            height: 400px;
+            float: left;
+        }
+        div ul {
+            width: 1300px;
+        }
+    </style>
+    <script src="../jquery.1.1.0.js"></script>
+    <script>
+        window.onload = function () {
+            //需求：鼠标放到当前li上面，该li变宽，其余的li变窄
+
+            //步骤
+            var div = document.getElementsByTagName("div")[0];
+            var liArr = div.getElementsByTagName("li");
+            //给li设置背景色
+            for(var i=0;i<liArr.length;i++){
+                liArr[i].style.background = "url(image/"+(i+1)+".jpg)";
+
+                //给每个li绑定事件
+                liArr[i].onmouseover = function () {
+                    //排他思想，全部变窄（变为100）
+                    for(var j=0;j<liArr.length;j++){
+                        animate(liArr[j],{"width":100});
+                    }
+                    //设置自身为800
+                    animate(this,{"width":800});
+                }
+                //离开全部恢复到原来的宽度
+                div.onmouseout = function () {
+                    for(var j=0;j<liArr.length;j++){
+                        animate(liArr[j],{"width":240});
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+</body>
+</html>

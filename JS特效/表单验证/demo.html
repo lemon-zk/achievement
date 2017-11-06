@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单验证</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            background: #ccc;
+        }
+
+        label {
+            width: 40px;
+            display: inline-block;
+        }
+        .container {
+            width: 400px;
+            padding: 50px 20px 30px;
+            line-height: 40px;
+            border: 1px solid #999;
+            margin: 100px auto;
+            background-color: #FAFFEB;
+        }
+        span {
+            margin-left: 30px;
+            font-size: 12px;
+            padding:2px 10px 0;
+            color: #ccc;
+        }
+        .pwd {
+            width: 220px;
+            height: 20px;
+            background: url("image/strong.jpg") no-repeat;
+        }
+        .wrong {
+            color: red;
+            background: url(image/error.png) no-repeat;
+        }
+        .right {
+            color: green;
+            background: url(image/right.png) no-repeat;
+        }
+        /*密码强度显示*/
+        .str1{
+            background-position: 0 -20px;
+        }
+        .str2{
+            background-position: 0 -40px;
+        }
+        .str3{
+            background-position: 0 -60px;
+        }
+        .str4{
+            background-position: 0 -80px;
+        }
+    </style>
+    <script src="index.js"></script>
+</head>
+<body>
+<div class="container">
+    <label for="inp1">Q Q</label><input type="text" id="inp1"><span>输入正确的QQ号码</span><br>
+    <label for="inp2">手机</label><input type="text" id="inp2"><span>输入11位手机号码</span><br>
+    <label for="inp3">邮箱</label><input type="text" id="inp3"><span>输入正确邮箱</span><br>
+    <label for="inp4">座机</label><input type="text" id="inp4"><span>输入您的座机</span><br>
+    <label for="inp5">账号</label><input type="text" id="inp5"><span>亲输入您的账号</span><br>
+    <label for="inp6">密码</label><input type="text" id="inp6"><span>请输入您的密码</span><br>
+    <div id="password" class="pwd">
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .box {
+            width: 300px;
+            height: 500px;
+            border: 1px solid red;
+            margin: 50px auto;
+            overflow: hidden;
+            position: relative;
+        }
+        .scroll {
+            width: 20px;
+            height: 530px;
+            background-color: #ccc;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        .bar {
+            width: 20px;
+            /*height: 100px;*/
+            background-color: red;
+            border-radius: 10px;
+            cursor: pointer;
+            position: absolute;
+            top: 0;
+        }
+        .content {
+            padding: 15px;
+            font: 400 16px/17px "simsun";
+        }
+    </style>
+    <script src="../jquery.1.1.0.js"></script>
+    <script>
+        window.onload = function () {
+            //需求：点击bar上下拖动，实现文章内容的上下滚动；
+
+            //步骤：
+            //1.获取元素
+            var box = document.getElementById("box");
+            var content = box.children[0];
+            var scroll = box.children[1];
+            var bar = scroll.children[0];
+            //为bar设置高度
+            // 比例设置： 内容高度/box高度 = scroll高度/bar高度
+            var barHeight = box.offsetHeight*scroll.offsetHeight/content.offsetHeight;
+            bar.style.height = barHeight + "px";
+            console.log(barHeight);
+            //2.事件绑定（先鼠标按住，然后拖动）
+            bar.onmousedown = function (event) {
+                //获取事件
+                event = event || window.event;
+                //获取鼠标在bar中的位置
+                var pageyy = event.pageY || scroll().top + event.clientY;
+                var y = pageyy - bar.offsetTop;
+                //鼠标拖动事件
+                document.onmousemove = function (event) {
+                    event = event || window.event;
+                    //获取鼠标所在scroll盒子中的位置
+                    var pagey = event.pageY || scroll().top + event.clientY;
+                    pagey = pagey - y;
+                    //为bar设置范围
+                    if(pagey<0){
+                        pagey = 0;
+                    }
+                    if(pagey>scroll.offsetHeight-bar.offsetHeight){
+                        pagey = scroll.offsetHeight-bar.offsetHeight;
+                    }
+                    bar.style.top = pagey + "px";
+
+                    //content跟随等比例移动
+                    //  content移动的距离/bar移动的距离 = （content的高-box的高）/（scroll的高-bar的高）
+                    var s = pagey *(content.offsetHeight-box.offsetHeight)/(scroll.offsetHeight-bar.offsetHeight);
+                    //s赋值给content。通过marginTop负值移动content
+                    content.style.marginTop = -s+"px";
+
+                    //解除文字选定
+                    window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+                }
+            }
+            //解除鼠标移动事件
+            document.onmouseup = function () {
+                document.onmousemove = null;
+            }
+
+        }
+    </script>
+</head>
+<body>
+<div class="box" id="box">
+    <div class="content">
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        孩儿励志出湘关，学不成名终不还。<br>
+        埋骨何须桑梓地，人生无处不青山。<br>
+        -------------结束------------<br>
+    </div>
+    <div class="scroll">
+        <div class="bar"></div>
+    </div>
+</div>
+</body>
+</html>
